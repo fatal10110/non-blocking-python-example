@@ -1,25 +1,35 @@
 from async_client import AsyncClient
 import event_loop
 from time import sleep
-from console_writer import write_console, flush
+from utils import write_console, flush
+from datetime import datetime
+import sys
 
 client = AsyncClient()
 
-def cpu_func():
-    i = 0
-
+def calculation():
     while True:
-        sleep(0.2)
-        i += 1
-    
-        write_console("cpu_func", "Counted to %s" % i)
-        
+        write_console("Current time: %s" % (datetime.now()))
         yield
+    
 
 host1 = ('localhost', 1234)
 host2 = ('localhost', 5678)
 
-event_loop.run(client.get(host1), cpu_func(), client.put(host2, 'some data')    )
+tasks = [
+    client.get(host1), 
+    calculation(), 
+    client.put(host2, 'some data')
+]
+
+print("Running async client with %s tasks\n\n" % len(tasks))
+
+for i in reversed(range(10)):
+    sys.stdout.write("Starting in: %s\r" % i)
+    sys.stdout.flush()
+    sleep(1)
+
+event_loop.run(*tasks)
 flush()
 
 

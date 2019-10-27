@@ -40,6 +40,9 @@ class EventLoop(object):
 
             except StopIteration:
                 # function completed
+
+                print("\n\n TASK %s FINISHED!!!\n\n" % task.__name__)
+
                 pass
         
         return new_tasks + self._check_readiness()

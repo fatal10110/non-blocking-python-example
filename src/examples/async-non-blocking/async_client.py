@@ -1,9 +1,9 @@
 import errno
 import socket
 from contextlib import contextmanager
-from console_writer import write_console
+from utils import write_console
 
-BUFF_SIZE = 32
+BUFF_SIZE = 1024
 
 from event_loop import Operations
 
@@ -34,20 +34,20 @@ class AsyncClient(object):
         data = sock.recv(BUFF_SIZE)
 
         while data:
-            write_console(sock, "Client received data %s" % data)
+            write_console("Client received data %s" % data)
             yield Operations.READ, sock
             data = sock.recv(BUFF_SIZE)
 
     def _write(self, sock, to_send):
         total_sent = 0
-        for _ in range(100):
-            data = to_send * 10 * 1024 * 1024
+        for _ in range(3):
+            data = to_send * 1024 * 256
 
             while len(data):
                 try:
                     sent = sock.send(data.encode())
                     total_sent += sent
-                    write_console(sock, "Data sent %s" % total_sent)
+                    write_console("Data sent %s" % total_sent)
                     data = data[sent:]
                 except socket.error as e:
                     if e.errno != errno.EAGAIN:
