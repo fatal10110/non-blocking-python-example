@@ -1,6 +1,7 @@
 #!/bin/bash
 
-tmux split-window -h "python3 $1/src/examples/server.py"
-tmux split-window -h "python3 $1/src/examples/server.py 5678 read"
+tmux split-window -h "docker run -v $1/src/examples:/example --rm -ti --network="host" example python async-non-blocking/server.py"
+tmux split-window -h "docker run -v $1/src/examples:/example --rm -ti --network="host" example python async-non-blocking/server.py 5678 read"
 tmux select-layout even-horizontal
-PYTHONPATH=$1/src/examples/ python3 $1/src/examples/async-non-blocking/client.py
+sleep 1
+docker run -v $1/src/examples:/example --rm -ti --network="host" example python async-non-blocking/client.py
